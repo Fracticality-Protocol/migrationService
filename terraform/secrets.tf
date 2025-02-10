@@ -7,7 +7,7 @@ data "aws_secretsmanager_secret_version" "db" {
 }
 
 data "aws_secretsmanager_secret" "mnemonic" {
-  name = "FRACTALITY_DB_${var.environment}"
+  name = "FRACTALITY_MIGRATION_${var.environment}"
 }
 
 data "aws_secretsmanager_secret_version" "mnemonic" {
