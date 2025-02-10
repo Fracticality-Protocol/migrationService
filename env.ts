@@ -1,6 +1,6 @@
-import { z } from "zod";
-import dotenv from "dotenv";
-dotenv.config();
+import { z } from 'zod'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const envSchema = z.object({
   PRIVATE_KEY: z.string(),
@@ -18,25 +18,26 @@ const envSchema = z.object({
   DB_PORT: z.coerce.number().optional(),
   DB_USER: z.string().optional(),
   DB_PASSWORD: z.string().optional(),
+  DB_SCHEMA: z.string().optional(),
   BLOCKCHAIN_ENVIRONMENT: z.string(),
   BLOCK_START_NUMBER: z.string(),
   SAFETY_CUSHION_NUMBER_OF_BLOCKS: z.coerce.number(),
   REDIS_CONNECTION_STRING: z.string(),
-  REDIS_USE_TLS: z.preprocess((str) => str === "true", z.boolean()),
-});
+  REDIS_USE_TLS: z.preprocess((str) => str === 'true', z.boolean())
+})
 
-const parsedEnv = envSchema.safeParse(process.env);
+const parsedEnv = envSchema.safeParse(process.env)
 
 if (!parsedEnv.success) {
   const formattedErrors = parsedEnv.error.errors.map((err) => ({
-    path: err.path.join("."),
-    message: err.message,
-  }));
+    path: err.path.join('.'),
+    message: err.message
+  }))
 
-  console.error("Environment variable validation failed:", formattedErrors);
-  throw new Error("Invalid environment variables.");
+  console.error('Environment variable validation failed:', formattedErrors)
+  throw new Error('Invalid environment variables.')
 }
 
-export type BotEnv = z.infer<typeof envSchema>;
+export type BotEnv = z.infer<typeof envSchema>
 
-export const env = parsedEnv.data;
+export const env = parsedEnv.data
