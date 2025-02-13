@@ -21,7 +21,7 @@ import cron from "node-cron";
 import { PreviousBlockManager } from "./libs/PreviousBlockManager";
 import { HyperliquidManager } from "./libs/HyperliquidManager";
 
-async function main() {
+export async function main(runWithCron: boolean) {
   await privateKeyManager.init();
   await initializeDatabaseConnection();
 
@@ -49,51 +49,71 @@ async function main() {
     () => blockchainConnectionProvider.getCurrentBlockNumber()
   );
 
-  console.log("starting cron job for migrations, running every 5 minutes");
-  cron.schedule("* * * * *", async () => {
-    const fromBlock = await blockManager.getFromBlockForScan();
-    const toBlock = await blockManager.setFromBlockForScanToCurrentBlock();
-    console.log(
-      `looking for migrations from block ${fromBlock} to block ${toBlock}`
+  if (runWithCron) {
+    console.log("starting cron job for migrations, running every 5 minutes");
+    cron.schedule("* * * * *", async () => {
+      await coreMigrationService(
+        blockManager,
+        blockchainConnectionProvider,
+        hlManager
+      );
+    });
+  } else {
+    await coreMigrationService(
+      blockManager,
+      blockchainConnectionProvider,
+      hlManager
     );
+  }
+}
 
-    const y2kMigrations = await blockchainConnectionProvider.scanMigrations(
-      env.Y2K_TOKEN_MIGRATION_ADDRESS as Address,
-      fromBlock,
-      toBlock
-    );
-    const frctRMigrations = await blockchainConnectionProvider.scanMigrations(
-      env.FRCT_R_MIGRATION_ADDRESS as Address,
-      fromBlock,
-      toBlock
-    );
-    await addMigrationsToDatabase([...y2kMigrations, ...frctRMigrations]);
+export async function coreMigrationService(
+  blockManager: PreviousBlockManager,
+  blockchainConnectionProvider: BlockchainConnectionProvider,
+  hlManager: HyperliquidManager
+) {
+  const fromBlock = await blockManager.getFromBlockForScan();
+  const toBlock = await blockManager.setFromBlockForScanToCurrentBlock();
+  console.log(
+    `looking for migrations from block ${fromBlock} to block ${toBlock}`
+  );
 
-    //get migrations that still have not been sent to hyperliquid
-    const unmigratedMigrations: TokenMigration[] =
-      await getUnmigratedFractalityTokenMigrations();
+  const y2kMigrations = await blockchainConnectionProvider.scanMigrations(
+    env.Y2K_TOKEN_MIGRATION_ADDRESS as Address,
+    fromBlock,
+    toBlock
+  );
+  const frctRMigrations = await blockchainConnectionProvider.scanMigrations(
+    env.FRCT_R_MIGRATION_ADDRESS as Address,
+    fromBlock,
+    toBlock
+  );
+  await addMigrationsToDatabase([...y2kMigrations, ...frctRMigrations]);
 
-    //calcualate the amount of tokens to send to hyperliquid
-    const hlMigrations = await prepForHLMigration(
-      hlManager,
-      unmigratedMigrations
-    );
-    console.log("hlMigrations", hlMigrations);
+  //get migrations that still have not been sent to hyperliquid
+  const unmigratedMigrations: TokenMigration[] =
+    await getUnmigratedFractalityTokenMigrations();
 
-    const { successes, failures } = await hlManager.sendHLMigrations(
-      hlMigrations
-    );
-    console.log("successes", successes);
-    console.log("failures", failures);
+  //calcualate the amount of tokens to send to hyperliquid
+  const hlMigrations = await prepForHLMigration(
+    hlManager,
+    unmigratedMigrations
+  );
+  console.log("hlMigrations", hlMigrations);
 
-    try {
-      await finalizeHlMigrations(successes);
-    } catch (error) {
-      console.error("FATAL ERROR: Error finalizing HL migrations", error);
-    }
+  const { successes, failures } = await hlManager.sendHLMigrations(
+    hlMigrations
+  );
+  console.log("successes", successes);
+  console.log("failures", failures);
 
-    console.log("done");
-  });
+  try {
+    await finalizeHlMigrations(successes);
+  } catch (error) {
+    console.error("FATAL ERROR: Error finalizing HL migrations", error);
+  }
+
+  console.log("done");
 }
 
 async function prepForHLMigration(
