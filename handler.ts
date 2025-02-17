@@ -1,19 +1,15 @@
-import { type Context, type Handler } from "aws-lambda";
+import { type Context, type Handler } from 'aws-lambda'
 
-import { main } from "./migrationService";
-interface ReportEvent {
-  DAGSTER_PIPES_CONTEXT: string;
-  DAGSTER_PIPES_MESSAGES: string;
-}
+import { main } from './migrationService'
 
-export const handler: Handler<ReportEvent, void> = async (
-  event: ReportEvent,
+export const handler: Handler<void, void> = async (
+  event: void,
   context: Context
 ): Promise<void> => {
   try {
-    await main(false);
+    await main(false)
   } catch (error) {
-    console.error("Error With Migration Service:", error);
-    throw error;
+    console.error('Error With Migration Service:', error)
+    throw error
   }
-};
+}

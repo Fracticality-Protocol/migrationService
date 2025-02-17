@@ -9,7 +9,7 @@ locals {
 resource "aws_security_group" "lambda_sg" {
   name        = "${var.name}-lambda-sg-${var.environment}"
   description = "Security group for Lambda functions"
-  vpc_id      = "vpc-08ae44a5cd755d8b0"
+  vpc_id      = var.vpc_id
 
   ingress {
     description     = "Allow Lambda to access RDS on port 5432"
@@ -43,10 +43,11 @@ resource "aws_lambda_function" "default" {
 
   environment {
     variables = {
-      PROVIDER_URL                    = var.provider_url
+      PROVIDER_URL                    = var.environment == "main" ? var.mainnet_provider_url : var.testnet_provider_url
       BLOCKCHAIN_ENVIRONMENT          = var.environment
       PUBLIC_ADDRESS                  = var.public_address
       TOKEN_ADDRESS                   = var.token_address
+      TESTNET                         = var.testnet
       MNEMONIC_SECRET_ARN             = data.aws_secretsmanager_secret.mnemonic.arn
       DB_USER                         = local.db_username
       DB_PASSWORD                     = local.db_password
@@ -63,7 +64,7 @@ resource "aws_lambda_function" "default" {
   }
 
   vpc_config {
-    subnet_ids         = ["subnet-05fe54f7cba0f2fd5", "subnet-07452d48590bce532"]
+    subnet_ids         = var.subnet_ids
     security_group_ids = [aws_security_group.lambda_sg.id]
   }
 }

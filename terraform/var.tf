@@ -41,7 +41,11 @@ variable "db_instance_id" {
   type = string
 }
 
-variable "provider_url" {
+variable "testnet_provider_url" {
+  type = string
+}
+
+variable "mainnet_provider_url" {
   type = string
 }
 
@@ -67,4 +71,8 @@ variable "block_start_number" {
 
 variable "safety_cushion_number_of_blocks" {
   type = string
+}
+
+variable "testnet" {
+  type = bool
 }
