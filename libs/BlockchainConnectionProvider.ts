@@ -13,6 +13,7 @@ import { env } from "../env";
 import abi from "../contracts/FractalityTokenMigration.sol.json";
 import { MigrationRegisteredEvent } from "../interfaces";
 import { MySqlBigInt64BuilderInitial } from "drizzle-orm/mysql-core";
+import { BlockchainConnectionError } from "../errors";
 interface BlockchainConnectionProviderOptions {
   providerUrl: string;
   y2kTokenMigrationAddress: Address;
@@ -80,7 +81,12 @@ export class BlockchainConnectionProvider {
   };
 
   public async getCurrentBlockNumber(): Promise<bigint> {
-    return this._viemClient.getBlockNumber();
+    try {
+      return this._viemClient.getBlockNumber();
+    } catch (error) {
+      throw new BlockchainConnectionError("Error getting current block number: " + error);
+    }
+
   }
 
   public async getArbitrumTokenDecimals(): Promise<bigint> {
@@ -127,6 +133,7 @@ export class BlockchainConnectionProvider {
     fromBlock: bigint,
     toBlock: bigint
   ): Promise<MigrationRegisteredEvent[]> {
+try{
     //This is the current block number
     if (fromBlock >= toBlock) {
       throw new Error("from block must be before toBlock");
@@ -161,5 +168,8 @@ export class BlockchainConnectionProvider {
       });
     });
     return decodedLogs;
+  } catch (error) {
+    throw new BlockchainConnectionError("Error scanning migrations: " + error);
+  }
   }
 }
