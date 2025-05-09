@@ -18,6 +18,7 @@ const envSchema = z.object({
   DB_PORT: z.coerce.number().optional(),
   DB_USER: z.string().optional(),
   DB_PASSWORD: z.string().optional(),
+  DB_SCHEMA: z.string().optional(),
   BLOCKCHAIN_ENVIRONMENT: z.string(),
   BLOCK_START_NUMBER: z.string(),
   SAFETY_CUSHION_NUMBER_OF_BLOCKS: z.coerce.number(),
