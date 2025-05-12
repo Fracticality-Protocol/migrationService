@@ -52,7 +52,7 @@ class ZipPlugin {
 }
 
 module.exports = {
-  entry: './src/handler.ts',
+  entry: './handler.ts',
   target: 'node',
   output: {
     path: path.resolve(__dirname, 'dist'),
