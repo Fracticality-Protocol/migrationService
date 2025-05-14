@@ -4,13 +4,14 @@ environment = "test"
 vpc_id      = "vpc-08ae44a5cd755d8b0"
 subnet_ids  = ["subnet-05fe54f7cba0f2fd5", "subnet-07452d48590bce532"]
 
-db_name                         = "fractality"
-db_instance_id                  = "fund-data-pipeline-db"
-testnet                         = true
+db_name        = "fractality"
+db_instance_id = "fund-data-pipeline-db"
+testnet        = true
+
 public_address                  = "0x5B5fe168C17A74Cd32B2A2b5dfB30aDA3edF94d6"
 token_address                   = "0xccbee9ae8e6666c53e55058c7b97ccee"
-y2k_token_migration_address     = "0x2839449acf90EDee7055FdA315875e9539359aA0"
-frct_r_migration_address        = "0xB78028Ca8246d5E8F08Fd656F9337C4E77Cd2389"
-block_start_number              = "119867300"
-safety_cushion_number_of_blocks = "250"
+y2k_token_migration_address     = "0xb8b47E61188Cc197F36C48B2298cb05afE4332E1"
+frct_r_migration_address        = "0x06a4F1CAa90d22a4b461fB970D4C22Ef63987a5c"
+block_start_number              = "335048846"
+safety_cushion_number_of_blocks = "5"
 

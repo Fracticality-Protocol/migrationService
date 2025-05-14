@@ -7,9 +7,17 @@ data "aws_secretsmanager_secret_version" "db" {
 }
 
 data "aws_secretsmanager_secret" "mnemonic" {
-  name = "FRACTALITY_MIGRATION_${var.environment}"
+  name = "FRACTALITY_MIGRATION_MN_${upper(var.environment)}"
 }
 
 data "aws_secretsmanager_secret_version" "mnemonic" {
   secret_id = data.aws_secretsmanager_secret.mnemonic.id
+}
+
+data "aws_secretsmanager_secret" "private_key" {
+  name = "FRACTALITY_MIGRATION_PK_${upper(var.environment)}"
+}
+
+data "aws_secretsmanager_secret_version" "private_key" {
+  secret_id = data.aws_secretsmanager_secret.private_key.id
 }
