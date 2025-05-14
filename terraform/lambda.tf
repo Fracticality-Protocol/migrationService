@@ -59,7 +59,7 @@ resource "aws_lambda_function" "default" {
         BLOCK_START_NUMBER              = var.block_start_number
         SAFETY_CUSHION_NUMBER_OF_BLOCKS = var.safety_cushion_number_of_blocks
         REDIS_CONNECTION_STRING         = "${aws_elasticache_replication_group.redis_cluster.primary_endpoint_address}:6379"
-        REDIS_USE_TLS                   = "true"
+        REDIS_USE_TLS                   = "false"
       },
       var.environment == "main" ? { MNEMONIC_SECRET_ARN = data.aws_secretsmanager_secret.mnemonic.arn } : {},
       var.environment == "test" ? { PRIVATE_KEY = data.aws_secretsmanager_secret.private_key.arn } : {}
