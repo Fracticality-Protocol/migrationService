@@ -80,6 +80,29 @@ resource "aws_iam_role_policy_attachment" "lambda_vpc_access" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+data "aws_iam_policy_document" "secretsmanager_access" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:DescribeSecret"
+    ]
+    resources = [
+      data.aws_secretsmanager_secret.private_key.arn,
+    ]
+  }
+}
+
+resource "aws_iam_policy" "secretsmanager_access" {
+  name   = "${var.name}-secretsmanager-access-${var.environment}"
+  policy = data.aws_iam_policy_document.secretsmanager_access.json
+}
+
+resource "aws_iam_role_policy_attachment" "secretsmanager_access" {
+  role       = aws_iam_role.default.name
+  policy_arn = aws_iam_policy.secretsmanager_access.arn
+}
+
 resource "aws_iam_role_policy_attachment" "lambda_policy" {
   role       = aws_iam_role.default.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
