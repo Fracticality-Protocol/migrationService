@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const envSchema = z.object({
-  PRIVATE_KEY: z.string(),
+  PRIVATE_KEY: z.string().optional(),
   PUBLIC_ADDRESS: z.string(),
   MNEMONIC_SECRET_ARN: z.string().optional(),
   AWS_REGION: z.string().optional(),
