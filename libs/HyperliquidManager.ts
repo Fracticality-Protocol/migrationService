@@ -1,6 +1,7 @@
 const { Hyperliquid } = require("hyperliquid");
 import { setHLMigrationStatus } from "../database";
 import { env } from "../env";
+import { HyperliquidError } from "../errors";
 import { HLMigration, MigrationStatus } from "../interfaces";
 import { DecimalConversion } from "./DecimalConversion";
 
@@ -33,11 +34,15 @@ export class HyperliquidManager {
   }
 
   async getUserTokenBalances(userAddress: string) {
-    const balances = await this.hlSdk.info.spot.getSpotClearinghouseState(
-      userAddress,
-      false
-    );
-    return balances;
+    try {
+      const balances = await this.hlSdk.info.spot.getSpotClearinghouseState(
+        userAddress,
+        false
+      );
+      return balances;
+    } catch (error) {
+      throw new HyperliquidError("Error getting user token balances: " + error);
+    }
   }
 
   getTokenDecimals() {
@@ -45,7 +50,11 @@ export class HyperliquidManager {
   }
 
   async getTokenInfo(tokenAddress: string) {
-    return this.hlSdk.info.spot.getTokenDetails(tokenAddress);
+    try {
+      return this.hlSdk.info.spot.getTokenDetails(tokenAddress);
+    } catch (error) {
+      throw new HyperliquidError("Error getting token info: " + error);
+    }
   }
 
   //NOTE: the amount here is NOT in wei. It is in decimal representation.
@@ -60,7 +69,7 @@ export class HyperliquidManager {
       console.log("Transfer successful");
     } else {
       console.log("Transfer failed", result.response);
-      throw new Error("Transfer failed");
+      throw new HyperliquidError("Transfer failed: " + result.response);
     }
   }
   //4000 migrations will take aroud 1000$ USDC!

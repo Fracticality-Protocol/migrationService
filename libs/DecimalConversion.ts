@@ -1,9 +1,15 @@
 import { ethers } from "ethers";
+import { DecimalConversionError } from "../errors";
 export class DecimalConversion {
   hlTokenDecimals: bigint;
   arbitrumTokenDecimals: bigint;
 
   constructor(hlTokenDecimals: bigint, arbitrumTokenDecimals: bigint) {
+    if (hlTokenDecimals > arbitrumTokenDecimals) {
+      throw new DecimalConversionError(
+        `HL token decimals (${hlTokenDecimals}) must be strictly smaller or equal to Arbitrum token decimals (${arbitrumTokenDecimals}).`
+      );
+    }
     this.hlTokenDecimals = hlTokenDecimals;
     this.arbitrumTokenDecimals = arbitrumTokenDecimals;
   }
