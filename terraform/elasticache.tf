@@ -40,7 +40,8 @@ resource "aws_elasticache_replication_group" "redis_cluster" {
     aws_security_group.lambda_sg.id
   ]
   subnet_group_name          = aws_elasticache_subnet_group.redis_subnet.name
-  automatic_failover_enabled = true
+  automatic_failover_enabled = false
+  num_cache_clusters         = 1
 
 
   tags = {
