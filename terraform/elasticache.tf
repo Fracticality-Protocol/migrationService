@@ -34,6 +34,7 @@ resource "aws_elasticache_replication_group" "redis_cluster" {
   description          = "{var.name} cluster for ${var.environment}"
   engine               = "redis"
   engine_version       = "6.x"
+  node_type            = "cache.t3.micro"
   security_group_ids = [
     aws_security_group.redis_sg.id,
     aws_security_group.lambda_sg.id
