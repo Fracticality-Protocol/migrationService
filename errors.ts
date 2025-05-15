@@ -16,6 +16,13 @@ export class RedisError extends Error {
     }
   }
 
+  export class AlchemyScanError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "AlchemyScanError";
+    }
+  }
+
 export class DecimalConversionError extends Error {
     constructor(message: string) {
       super(message);
