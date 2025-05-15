@@ -6,7 +6,7 @@ subnet_ids  = ["subnet-05fe54f7cba0f2fd5", "subnet-07452d48590bce532"]
 
 db_name        = "fractality"
 db_instance_id = "fund-data-pipeline-db"
-testnet        = true
+testnet        = false
 
 public_address                  = "0x5B5fe168C17A74Cd32B2A2b5dfB30aDA3edF94d6"
 token_address                   = "0xccbee9ae8e6666c53e55058c7b97ccee"

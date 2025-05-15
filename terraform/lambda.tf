@@ -44,7 +44,7 @@ resource "aws_lambda_function" "default" {
   environment {
     variables = {
       PROVIDER_URL                    = var.environment == "main" ? var.mainnet_provider_url : var.testnet_provider_url
-      BLOCKCHAIN_ENVIRONMENT          = var.environment
+      BLOCKCHAIN_ENVIRONMENT          = "main"
       PUBLIC_ADDRESS                  = var.public_address
       TOKEN_ADDRESS                   = var.token_address
       TESTNET                         = var.testnet
