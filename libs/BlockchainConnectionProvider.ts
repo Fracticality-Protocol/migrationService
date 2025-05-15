@@ -3,7 +3,7 @@ import { arbitrum, arbitrumSepolia } from 'viem/chains'
 import { env } from '../env'
 import abi from '../contracts/FractalityTokenMigration.sol.json'
 import { MigrationRegisteredEvent } from '../interfaces'
-import { BlockchainConnectionError } from '../errors'
+import { AlchemyScanError, BlockchainConnectionError } from '../errors'
 interface BlockchainConnectionProviderOptions {
   providerUrl: string
   y2kTokenMigrationAddress: Address
@@ -174,7 +174,7 @@ export class BlockchainConnectionProvider {
 
       return decodedLogs
     } catch (error) {
-      throw new BlockchainConnectionError('Error scanning migrations: ' + error)
+      throw new AlchemyScanError(`Error scanning migrations in block range ${fromBlock} to ${toBlock}: ${error}`)
     }
   }
 }
