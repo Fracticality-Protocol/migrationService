@@ -14,4 +14,5 @@ y2k_token_migration_address     = "0xb8b47E61188Cc197F36C48B2298cb05afE4332E1"
 frct_r_migration_address        = "0x06a4F1CAa90d22a4b461fB970D4C22Ef63987a5c"
 block_start_number              = "335048846"
 safety_cushion_number_of_blocks = "5"
+slack_channel_id                = "C08TGV7UG8Z"
 

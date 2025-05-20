@@ -60,6 +60,8 @@ resource "aws_lambda_function" "default" {
       REDIS_CONNECTION_STRING         = "${aws_elasticache_replication_group.redis_cluster.primary_endpoint_address}:6379"
       REDIS_USE_TLS                   = "false"
       MNEMONIC_SECRET_ARN             = data.aws_secretsmanager_secret.private_key.arn
+      SLACK_TOKEN                     = var.slack_token
+      SLACK_CHANNEL_ID                = var.slack_channel_id
     }
   }
 

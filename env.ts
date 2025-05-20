@@ -23,7 +23,9 @@ const envSchema = z.object({
   BLOCK_START_NUMBER: z.string(),
   SAFETY_CUSHION_NUMBER_OF_BLOCKS: z.coerce.number(),
   REDIS_CONNECTION_STRING: z.string(),
-  REDIS_USE_TLS: z.preprocess((str) => str === 'true', z.boolean())
+  REDIS_USE_TLS: z.preprocess((str) => str === 'true', z.boolean()),
+  SLACK_TOKEN: z.string().optional(),
+  SLACK_CHANNEL_ID: z.string().optional()
 })
 
 const parsedEnv = envSchema.safeParse(process.env)

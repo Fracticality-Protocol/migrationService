@@ -76,3 +76,12 @@ variable "safety_cushion_number_of_blocks" {
 variable "testnet" {
   type = bool
 }
+
+variable "slack_channel_id" {
+  type = string
+}
+
+variable "slack_token" {
+  type      = string
+  sensitive = true
+}

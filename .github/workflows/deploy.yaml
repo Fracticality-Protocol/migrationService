@@ -67,7 +67,8 @@ jobs:
             -var="region=${{ vars.AWS_REGION }}" \
             -var="project_version=${{ env.PROJECT_VERSION }}" \
             -var="testnet_provider_url=${{ secrets.TESTNET_PROVIDER_URL }}" \
-            -var="mainnet_provider_url=${{ secrets.MAINNET_PROVIDER_URL }}"
+            -var="mainnet_provider_url=${{ secrets.MAINNET_PROVIDER_URL }}" \
+            -var="slack_token=${{ secrets.SLACK_TOKEN }}"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
