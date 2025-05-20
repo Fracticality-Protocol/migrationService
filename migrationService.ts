@@ -21,7 +21,7 @@ import { Slack } from './libs/Slack'
 
 export async function main(runWithCron: boolean) {
   if (env.SLACK_TOKEN) {
-    Slack.initialize(process.env.SLACK_TOKEN!, process.env.SLACK_CHANNEL_ID!)
+    Slack.initialize(env.SLACK_TOKEN!, env.SLACK_CHANNEL_ID!)
   }
 
   await privateKeyManager.init()
@@ -47,7 +47,7 @@ export async function main(runWithCron: boolean) {
   )
 
   if (runWithCron) {
-    console.log('starting cron job for migrations, running every 5 minutes')
+    console.info('starting cron job for migrations, running every 5 minutes')
     const scheduledTask = cron.schedule('* * * * *', async () => {
       try {
         await coreMigrationService(blockManager, blockchainConnectionProvider, hlManager)
@@ -55,7 +55,7 @@ export async function main(runWithCron: boolean) {
         if (error instanceof FatalFinalizationError) {
           scheduledTask.stop()
         } else {
-          console.log('Error in core migration service, this run will be skipped', error)
+          console.info('Error in core migration service, this run will be skipped', error)
         }
       }
     })
@@ -64,14 +64,14 @@ export async function main(runWithCron: boolean) {
       if (await redisOperations.shouldRunAccordingToStopRunningFlag()) {
         await coreMigrationService(blockManager, blockchainConnectionProvider, hlManager)
       } else {
-        console.log('stopRunning flag is set, not running core migration service')
+        console.info('stopRunning flag is set, not running core migration service')
         return
       }
     } catch (error) {
       if (error instanceof FatalFinalizationError) {
         await redisOperations.setStopRunningFlag()
       } else {
-        console.log('Error in core migration service, this run will be skipped', error)
+        console.info('Error in core migration service, this run will be skipped', error)
       }
       throw error
     }
@@ -88,7 +88,7 @@ export async function coreMigrationService(
 
   //This gets the current block and sets it in redis. If fails, will bubble up and this run will be skipped.
   const toBlock = await blockManager.setFromBlockForScanToCurrentBlock()
-  console.log(`looking for migrations from block ${fromBlock} to block ${toBlock}`)
+  console.info(`looking for migrations from block ${fromBlock} to block ${toBlock}`)
 
   //Gets logs from the blockchain. If fails, will bubble up and this run will be skipped.
   const y2kMigrations = await blockchainConnectionProvider.scanMigrations(
@@ -113,12 +113,12 @@ export async function coreMigrationService(
   //If all the migrations are not able to be prepped, we will skip this run and try again next time.
   //However, I don't see this failing as it's just doing some math.
   const hlMigrations = await prepForHLMigration(hlManager, unmigratedMigrations)
-  console.log('hlMigrations', hlMigrations)
+  console.info('hlMigrations', hlMigrations)
 
   //This fails gracefully, the ones we could not send are in the faulures array.
   const { successes, failures } = await hlManager.sendHLMigrations(hlMigrations)
-  console.log('successes', successes)
-  console.log('failures', failures)
+  console.info('successes', successes)
+  console.info('failures', failures)
 
   let finalizationMaxRetries = 3
   let migrationsToFinalize = successes
@@ -167,7 +167,7 @@ async function prepForHLMigration(
 
 async function addMigrationsToDatabase(migrations: MigrationRegisteredEvent[]) {
   const result = await filterAndaddNewFractalityTokenMigrations(migrations) //TODO: make this batch
-  console.log(
+  console.info(
     `Inserted ${result.newMigrations.length} new migrations and found ${result.existingTxs.length} existing migrations`
   )
   console.info(`existing migrations that already exist in the database`, result.existingTxs)
