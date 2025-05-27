@@ -38,6 +38,20 @@ export class DecimalConversionError extends Error {
     }
   }
 
+  export class HyperLiquidInsufficientHlTokenError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "HyperLiquidInsufficientHlTokenError";
+    }
+  }
+
+  export class HyperLiquidInsufficientGasTokenError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "HyperLiquidInsufficientGasTokenError";
+    }
+  }
+
   export class BlockchainConnectionError extends Error {
     constructor(message: string) {
       super(message);
