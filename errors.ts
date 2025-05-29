@@ -1,5 +1,43 @@
 import { HLMigration } from "./interfaces";
 
+
+export class PrivateKeyManagerInitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "PrivateKeyManagerError";
+    }
+  }
+
+  export class DatabaseInitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "DatabaseInitError";
+    }
+  }
+
+export class HyperliquidInitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "HyperliquidInitError";
+    }
+  }
+
+export class RedisInitError extends Error {
+    constructor(message: string) {
+      super(message);
+        this.name = "RedisInitError";
+    }
+  }
+
+  export class BlockchainConnectionInitError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "BlockchainConnectionInitError";
+    }
+  }
+  
+
+
 export class FatalFinalizationError extends Error {
     failedMigrations: HLMigration[];
     constructor(message: string, failedMigrations: HLMigration[]) {
@@ -38,10 +76,24 @@ export class DecimalConversionError extends Error {
     }
   }
 
-  export class BlockchainConnectionError extends Error {
+  export class HyperLiquidInsufficientHlTokenError extends Error {
     constructor(message: string) {
       super(message);
-      this.name = "BlockchainConnectionError";
+      this.name = "HyperLiquidInsufficientHlTokenError";
+    }
+  }
+
+  export class HyperLiquidInsufficientGasTokenError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "HyperLiquidInsufficientGasTokenError";
+    }
+  }
+
+  export class BlockchainGetCurrentBlockError extends Error {
+    constructor(message: string) {
+      super(message);
+      this.name = "BlockchainGetCurrentBlockError";
     }
   }
 

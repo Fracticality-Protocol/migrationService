@@ -1,13 +1,17 @@
 import { env } from "../env";
 import IORedis from "ioredis";
-import { RedisError } from "../errors";
+import { RedisError, RedisInitError } from "../errors";
 
 export class RedisOperations {
     private redisConnection: IORedis | null = null;
 
 
     async initialize() {
-        this.redisConnection = await this.initRedisConnection();
+        try {
+            this.redisConnection = await this.initRedisConnection();
+        } catch (error) {
+            throw new RedisInitError("Error initializing redis connection: " + error);
+        }
     }
 
 

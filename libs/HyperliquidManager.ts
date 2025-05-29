@@ -1,7 +1,7 @@
 const { Hyperliquid } = require('hyperliquid')
 import { setHLMigrationStatus } from '../database'
 import { env } from '../env'
-import { HyperliquidError } from '../errors'
+import { HyperliquidError, HyperliquidInitError, HyperLiquidInsufficientGasTokenError, HyperLiquidInsufficientHlTokenError } from '../errors'
 import { HLMigration, MigrationStatus } from '../interfaces'
 import { DecimalConversion } from './DecimalConversion'
 
@@ -22,15 +22,19 @@ export class HyperliquidManager {
   }
 
   async init(arbitrumTokenDecimals: bigint) {
-    await this.hlSdk.connect()
-    this.tokenInfo = await this.getTokenInfo(env.TOKEN_ADDRESS)
-    console.info(
+    try {
+      await this.hlSdk.connect()
+      this.tokenInfo = await this.getTokenInfo(env.TOKEN_ADDRESS)
+      console.info(
       `Using HL token with name ${this.tokenInfo.name} wei decimals ${this.tokenInfo.weiDecimals}`
     )
-    this.decimalConversion = new DecimalConversion(
-      this.tokenInfo.weiDecimals,
-      arbitrumTokenDecimals
-    )
+      this.decimalConversion = new DecimalConversion(
+        this.tokenInfo.weiDecimals,
+        arbitrumTokenDecimals
+      )
+    } catch (error) {
+      throw new HyperliquidInitError('Error initializing hyperliquid manager: ' + error)
+    }
   }
 
   async getUserTokenBalances(userAddress: string) {
@@ -66,7 +70,16 @@ export class HyperliquidManager {
       console.info('Transfer successful')
     } else {
       console.info('Transfer failed', result.response)
-      throw new HyperliquidError('Transfer failed: ' + result.response)
+
+      if(result.response.toLowerCase().includes('insufficient balance for token transfer')) {
+        throw new HyperLiquidInsufficientHlTokenError('NEED TO TOP UP HL TOKEN BALANCE - ' + result.response)
+      }
+
+      if(result.response.toLowerCase().includes('Insufficient USDC balance for token transfer gas')) {
+        throw new HyperLiquidInsufficientGasTokenError('NEED TO TOP UP USDC GAS TOKEN BALANCE - ' + result.response)
+      }
+
+      throw new HyperliquidError('Transfer failed for a reason not related to hl or gas balance - ' + result.response)
     }
   }
   //4000 migrations will take aroud 1000$ USDC!
