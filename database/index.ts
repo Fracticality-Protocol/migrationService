@@ -5,14 +5,15 @@ import { eq, asc, and, gt, sql, inArray, not } from 'drizzle-orm'
 import * as schema from './schema'
 import { env } from '../env'
 import { HLMigration, MigrationRegisteredEvent, MigrationStatus } from '../interfaces'
-import { DatabaseError } from '../errors'
+import { DatabaseError, DatabaseInitError } from '../errors'
 
 let db: PostgresJsDatabase<typeof schema> | null = null
 
 export async function initializeDatabaseConnection(): Promise<PostgresJsDatabase<typeof schema>> {
-  if (db) {
-    return db
-  }
+  try {
+    if (db) {
+      return db
+    }
   let connection: postgres.Sql<{}> | null = null
   if (env.NODE_ENV === 'local') {
     //local defaults for a local db instance
@@ -34,6 +35,9 @@ export async function initializeDatabaseConnection(): Promise<PostgresJsDatabase
   db = drizzle(connection, { schema })
   console.log('database connection initialized')
   return db
+  } catch (error) {
+    throw new DatabaseInitError('Error initializing database connection: ' + error)
+  }
 }
 
 export async function filterAndaddNewFractalityTokenMigrations(

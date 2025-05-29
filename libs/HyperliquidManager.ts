@@ -1,7 +1,7 @@
 const { Hyperliquid } = require('hyperliquid')
 import { setHLMigrationStatus } from '../database'
 import { env } from '../env'
-import { HyperliquidError, HyperLiquidInsufficientGasTokenError, HyperLiquidInsufficientHlTokenError } from '../errors'
+import { HyperliquidError, HyperliquidInitError, HyperLiquidInsufficientGasTokenError, HyperLiquidInsufficientHlTokenError } from '../errors'
 import { HLMigration, MigrationStatus } from '../interfaces'
 import { DecimalConversion } from './DecimalConversion'
 
@@ -22,15 +22,19 @@ export class HyperliquidManager {
   }
 
   async init(arbitrumTokenDecimals: bigint) {
-    await this.hlSdk.connect()
-    this.tokenInfo = await this.getTokenInfo(env.TOKEN_ADDRESS)
-    console.info(
+    try {
+      await this.hlSdk.connect()
+      this.tokenInfo = await this.getTokenInfo(env.TOKEN_ADDRESS)
+      console.info(
       `Using HL token with name ${this.tokenInfo.name} wei decimals ${this.tokenInfo.weiDecimals}`
     )
-    this.decimalConversion = new DecimalConversion(
-      this.tokenInfo.weiDecimals,
-      arbitrumTokenDecimals
-    )
+      this.decimalConversion = new DecimalConversion(
+        this.tokenInfo.weiDecimals,
+        arbitrumTokenDecimals
+      )
+    } catch (error) {
+      throw new HyperliquidInitError('Error initializing hyperliquid manager: ' + error)
+    }
   }
 
   async getUserTokenBalances(userAddress: string) {

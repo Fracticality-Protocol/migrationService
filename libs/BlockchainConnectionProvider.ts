@@ -3,7 +3,7 @@ import { arbitrum, arbitrumSepolia } from 'viem/chains'
 import { env } from '../env'
 import abi from '../contracts/FractalityTokenMigration.sol.json'
 import { MigrationRegisteredEvent } from '../interfaces'
-import { AlchemyScanError, BlockchainConnectionError } from '../errors'
+import { AlchemyScanError, BlockchainConnectionInitError, BlockchainGetCurrentBlockError } from '../errors'
 interface BlockchainConnectionProviderOptions {
   providerUrl: string
   y2kTokenMigrationAddress: Address
@@ -57,10 +57,14 @@ export class BlockchainConnectionProvider {
   public _viemClient: ReturnType<typeof createPublicClient>
 
   constructor(opts: BlockchainConnectionProviderOptions) {
-    this.y2kTokenMigrationAddress = opts.y2kTokenMigrationAddress
-    this.frctRTokenMigrationAddress = opts.frctRTokenMigrationAddress
-    this._viemClient = this._init(opts)
-    console.log('Connected to blockchain', this._viemClient.chain!.name)
+    try {
+      this.y2kTokenMigrationAddress = opts.y2kTokenMigrationAddress
+      this.frctRTokenMigrationAddress = opts.frctRTokenMigrationAddress
+      this._viemClient = this._init(opts)
+      console.log('Connected to blockchain', this._viemClient.chain!.name)
+    } catch (error) {
+      throw new BlockchainConnectionInitError('Error initializing blockchain connection provider: ' + error)
+    }
   }
 
   private _init = (opts: BlockchainConnectionProviderOptions) => {
@@ -74,7 +78,7 @@ export class BlockchainConnectionProvider {
     try {
       return this._viemClient.getBlockNumber()
     } catch (error) {
-      throw new BlockchainConnectionError('Error getting current block number: ' + error)
+      throw new BlockchainGetCurrentBlockError('Error getting current block number: ' + error)
     }
   }
 

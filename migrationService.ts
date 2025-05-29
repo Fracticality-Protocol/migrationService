@@ -24,15 +24,21 @@ export async function main(runWithCron: boolean) {
     Slack.initialize(env.SLACK_TOKEN!, env.SLACK_CHANNEL_ID!)
   }
 
+  let blockManager: PreviousBlockManager | null = null
+  let blockchainConnectionProvider: BlockchainConnectionProvider | null = null
+  let hlManager: HyperliquidManager | null = null
+  let redisOperations: RedisOperations | null = null
+  try{
+  
   await privateKeyManager.init()
   await initializeDatabaseConnection()
 
-  const redisOperations = new RedisOperations()
+  redisOperations = new RedisOperations()
   await redisOperations.initialize()
 
-  const hlManager = new HyperliquidManager(true, true, privateKeyManager.getPrivateKey())
+  hlManager = new HyperliquidManager(true, true, privateKeyManager.getPrivateKey())
 
-  const blockchainConnectionProvider = new BlockchainConnectionProvider({
+  blockchainConnectionProvider = new BlockchainConnectionProvider({
     providerUrl: env.PROVIDER_URL,
     y2kTokenMigrationAddress: env.Y2K_TOKEN_MIGRATION_ADDRESS as Address,
     frctRTokenMigrationAddress: env.FRCT_R_MIGRATION_ADDRESS as Address
@@ -40,11 +46,16 @@ export async function main(runWithCron: boolean) {
 
   await hlManager.init(await blockchainConnectionProvider.getArbitrumTokenDecimals())
 
-  const blockManager = new PreviousBlockManager(
+  blockManager = new PreviousBlockManager(
     redisOperations,
     BigInt(env.SAFETY_CUSHION_NUMBER_OF_BLOCKS),
-    () => blockchainConnectionProvider.getCurrentBlockNumber()
+    () => blockchainConnectionProvider!.getCurrentBlockNumber()
   )
+
+  } catch (error) {
+    console.error("Error initializing migration service due to the following error, skipping this run", error);
+    throw error;
+  }
 
   if (runWithCron) {
     console.info('starting cron job for migrations, running every 5 minutes')
