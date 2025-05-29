@@ -36,7 +36,7 @@ export async function main(runWithCron: boolean) {
   redisOperations = new RedisOperations()
   await redisOperations.initialize()
 
-  hlManager = new HyperliquidManager(true, true, privateKeyManager.getPrivateKey())
+  hlManager = new HyperliquidManager(false, env.TESTNET, privateKeyManager.getPrivateKey())
 
   blockchainConnectionProvider = new BlockchainConnectionProvider({
     providerUrl: env.PROVIDER_URL,
@@ -56,7 +56,7 @@ export async function main(runWithCron: boolean) {
     console.error("Error initializing migration service due to the following error, skipping this run", error);
     throw error;
   }
-
+  console.info('migration service initialized')
   if (runWithCron) {
     console.info('starting cron job for migrations, running every 5 minutes')
     const scheduledTask = cron.schedule('* * * * *', async () => {

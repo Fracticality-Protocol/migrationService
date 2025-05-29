@@ -24,6 +24,7 @@ export class HyperliquidManager {
   async init(arbitrumTokenDecimals: bigint) {
     try {
       await this.hlSdk.connect()
+      console.info('Connected to hyperliquid')
       this.tokenInfo = await this.getTokenInfo(env.TOKEN_ADDRESS)
       console.info(
       `Using HL token with name ${this.tokenInfo.name} wei decimals ${this.tokenInfo.weiDecimals}`

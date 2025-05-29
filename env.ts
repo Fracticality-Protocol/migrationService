@@ -7,7 +7,7 @@ const envSchema = z.object({
   PUBLIC_ADDRESS: z.string(),
   MNEMONIC_SECRET_ARN: z.string().optional(),
   AWS_REGION: z.string().optional(),
-  TESTNET: z.coerce.boolean(),
+  TESTNET: z.preprocess((str) => str === 'true', z.boolean()),
   TOKEN_ADDRESS: z.string(),
   PROVIDER_URL: z.string(),
   Y2K_TOKEN_MIGRATION_ADDRESS: z.string(),
