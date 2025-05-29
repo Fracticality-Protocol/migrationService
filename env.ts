@@ -1,9 +1,9 @@
-import { z } from "zod";
-import dotenv from "dotenv";
-dotenv.config();
+import { z } from 'zod'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const envSchema = z.object({
-  PRIVATE_KEY: z.string(),
+  PRIVATE_KEY: z.string().optional(),
   PUBLIC_ADDRESS: z.string(),
   MNEMONIC_SECRET_ARN: z.string().optional(),
   AWS_REGION: z.string().optional(),
@@ -12,31 +12,34 @@ const envSchema = z.object({
   PROVIDER_URL: z.string(),
   Y2K_TOKEN_MIGRATION_ADDRESS: z.string(),
   FRCT_R_MIGRATION_ADDRESS: z.string(),
-  NODE_ENV: z.string(),
+  NODE_ENV: z.string().optional(),
   DB_NAME: z.string(),
   DB_HOST: z.string().optional(),
   DB_PORT: z.coerce.number().optional(),
   DB_USER: z.string().optional(),
   DB_PASSWORD: z.string().optional(),
+  DB_SCHEMA: z.string().optional(),
   BLOCKCHAIN_ENVIRONMENT: z.string(),
   BLOCK_START_NUMBER: z.string(),
   SAFETY_CUSHION_NUMBER_OF_BLOCKS: z.coerce.number(),
   REDIS_CONNECTION_STRING: z.string(),
-  REDIS_USE_TLS: z.preprocess((str) => str === "true", z.boolean()),
-});
+  REDIS_USE_TLS: z.preprocess((str) => str === 'true', z.boolean()),
+  SLACK_TOKEN: z.string().optional(),
+  SLACK_CHANNEL_ID: z.string().optional()
+})
 
-const parsedEnv = envSchema.safeParse(process.env);
+const parsedEnv = envSchema.safeParse(process.env)
 
 if (!parsedEnv.success) {
   const formattedErrors = parsedEnv.error.errors.map((err) => ({
-    path: err.path.join("."),
-    message: err.message,
-  }));
+    path: err.path.join('.'),
+    message: err.message
+  }))
 
-  console.error("Environment variable validation failed:", formattedErrors);
-  throw new Error("Invalid environment variables.");
+  console.error('Environment variable validation failed:', formattedErrors)
+  throw new Error('Invalid environment variables.')
 }
 
-export type BotEnv = z.infer<typeof envSchema>;
+export type BotEnv = z.infer<typeof envSchema>
 
-export const env = parsedEnv.data;
+export const env = parsedEnv.data

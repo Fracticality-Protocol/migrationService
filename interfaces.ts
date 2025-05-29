@@ -16,8 +16,7 @@ export interface HLMigration {
 }
 
 export enum MigrationStatus {
-  FOUND_ON_ARBITRUM = "FOUND_ON_ARBITRUM",
-  PREPPED_FOR_HL = "PREPPED_FOR_HL",
-  SENT_TO_HL = "SENT_TO_HL",
-  ERRORED_IN_SENDING_TO_HL = "ERRORED_IN_SENDING_TO_HL",
+  FOUND_ON_ARBITRUM = "FOUND_ON_ARBITRUM", //Just found on arbitrum, not filtered.
+  SENT_TO_HL = "SENT_TO_HL", //Sent to HL
+  ERRORED_IN_SENDING_TO_HL = "ERRORED_IN_SENDING_TO_HL", //Errored in sending to HL
 }
